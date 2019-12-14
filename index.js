@@ -1,4 +1,5 @@
 const { Keystone } = require('@keystonejs/keystone');
+const { NextApp } = require('@keystonejs/app-next');
 const { PasswordAuthStrategy } = require('@keystonejs/auth-password');
 const { Text, Checkbox, Password } = require('@keystonejs/fields');
 const { GraphQLApp } = require('@keystonejs/app-graphql');
@@ -68,5 +69,6 @@ module.exports = {
       enableDefaultRoute: true,
       authStrategy,
     }),
+    new NextApp({ dir: 'app' }),
   ],
 };
