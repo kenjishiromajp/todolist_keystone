@@ -1,7 +1,7 @@
 const { Keystone } = require('@keystonejs/keystone');
 const { NextApp } = require('@keystonejs/app-next');
 const { PasswordAuthStrategy } = require('@keystonejs/auth-password');
-const { Text, Checkbox, Password } = require('@keystonejs/fields');
+const { Text: FieldText, Checkbox, Password, Relationship } = require('@keystonejs/fields');
 const { GraphQLApp } = require('@keystonejs/app-graphql');
 const { AdminUIApp } = require('@keystonejs/app-admin-ui');
 const initialiseData = require('./initial-data.ts');
@@ -16,6 +16,7 @@ const keystone = new Keystone({
   adapter: new Adapter({
     client: 'postgres',
     connection: 'postgres://localhost/todolist',
+    // dropDatabase: true,
   }),
   onConnect: initialiseData,
 });
@@ -36,13 +37,15 @@ const userIsAdminOrOwner = auth => {
 const access = { userIsAdmin, userOwnsItem, userIsAdminOrOwner };
 
 keystone.createList('User', {
+  labelField: 'email',
   fields: {
-    name: { type: Text },
+    name: { type: FieldText },
     email: {
-      type: Text,
+      type: FieldText,
       isUnique: true,
     },
     isAdmin: { type: Checkbox },
+    todoLists: { type: Relationship, ref: 'TodoList', many: true },
     password: {
       type: Password,
     },
@@ -52,6 +55,36 @@ keystone.createList('User', {
     update: access.userIsAdminOrOwner,
     create: access.userIsAdmin,
     delete: access.userIsAdmin,
+    auth: true,
+  },
+});
+
+keystone.createList('Todo', {
+  labelField: 'title',
+  fields: {
+    title: { type: FieldText },
+    todoList: { type: Relationship, ref: 'TodoList' },
+  },
+  access: {
+    read: access.userIsAdminOrOwner,
+    update: access.userIsAdminOrOwner,
+    delete: access.userIsAdminOrOwner,
+    auth: true,
+  },
+});
+
+keystone.createList('TodoList', {
+  labelField: 'title',
+  fields: {
+    title: { type: FieldText },
+    user: { type: Relationship, ref: 'User.id' },
+    todos: { type: Relationship, ref: 'Todo', many: true },
+  },
+  access: {
+    read: access.userIsAdminOrOwner,
+    update: access.userIsAdminOrOwner,
+    create: true,
+    delete: access.userIsAdminOrOwner,
     auth: true,
   },
 });
