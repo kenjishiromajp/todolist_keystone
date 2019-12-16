@@ -3,7 +3,11 @@ import Document, { Head, Main, NextScript } from 'next/document';
 // Import styled components ServerStyleSheet
 import { ServerStyleSheet } from 'styled-components';
 
-export default class MyDocument extends Document {
+type MyDocumentsProps = {
+  styleTags: object,
+};
+
+export default class MyDocument extends Document<MyDocumentsProps> {
   static getInitialProps({ renderPage }) {
     // Step 1: Create an instance of ServerStyleSheet
     const sheet = new ServerStyleSheet();
@@ -24,7 +28,7 @@ export default class MyDocument extends Document {
     return (
       <html>
       <Head>
-        {this.props.styleTags}
+        { this.props.styleTags }
       </Head>
       <body>
         <Main />

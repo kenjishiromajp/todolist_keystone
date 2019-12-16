@@ -14,7 +14,6 @@ const MainLayout = ( { children }) => (
         <a href="/admin">
           Go to Admin Console
         </a>
-        .
       </footer>
     </div>
   </>
